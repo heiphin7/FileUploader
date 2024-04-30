@@ -40,7 +40,9 @@ public class TypeChecker {
                 pathToSave = UploadPaths.JSON_PATH;
             } else if (typeOfFile.equals("application/xml")) {
                 pathToSave = UploadPaths.XML_PATH;
-            } else { // Other types
+            } else if (typeOfFile.equals("appication/zip")) {
+                pathToSave = UploadPaths.ZIP_PATH;
+            }else { // Other types
                 pathToSave = UploadPaths.OTHERS_PATH;
             }
         }
