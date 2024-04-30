@@ -2,6 +2,7 @@ package com.file.uploader.controller;
 
 import com.file.uploader.utils.TypeChecker;
 import com.file.uploader.utils.UploadPaths;
+import com.file.uploader.utils.ZipUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -27,7 +29,7 @@ public class MainController {
 
     @Transactional
     @PostMapping("/upload-file")
-    public ResponseEntity<?> uploadNewFile(@RequestParam("file") MultipartFile[] multipartFiles) {
+    public ResponseEntity<?> uploadNewFile(@RequestParam("file") MultipartFile[] multipartFiles) throws IOException{
         // Используя цикл, перебираем каждый файл
 
         for(MultipartFile multipartFile: multipartFiles) {
@@ -45,6 +47,12 @@ public class MainController {
             if(new File(pathToSave + fullNameOfFile).exists()) {
                 return new ResponseEntity<>
                         ("Такой файл уже существует, выберите дргуое название", HttpStatus.BAD_REQUEST);
+            }
+
+            // Если тип файла - zip, тогда мы должны обработать каждый файл в данном zip
+            if(typeOfFile.equals("application/zip")) {
+                File[] unZippedFile = ZipUtils.unZip(multipartFile);
+                System.out.println(Arrays.toString(unZippedFile));
             }
 
              // После того, как мы определили, куда будет файл сохраняться мы должны сохранить сам файл

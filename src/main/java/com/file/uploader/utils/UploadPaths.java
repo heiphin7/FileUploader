@@ -16,5 +16,6 @@ public class UploadPaths {
     public static String OTHERS_PATH = "C:\\Users\\rshal\\files\\others\\";
     public static String XML_PATH = "C:\\Users\\rshal\\files\\config-files\\xml\\";
     public static String JSON_PATH = "C:\\Users\\rshal\\files\\config-files\\json\\";
+    public static String ZIP_PATH = "C:\\Users\\rshal\\files\\zip-flies\\";
 
 }
