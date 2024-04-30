@@ -1,5 +1,6 @@
 package com.file.uploader.controller;
 
+import com.file.uploader.utils.TypeChecker;
 import com.file.uploader.utils.UploadPaths;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 
 @RestController
@@ -30,49 +32,19 @@ public class MainController {
 
         for(MultipartFile multipartFile: multipartFiles) {
             String typeOfFile = multipartFile.getContentType();
-            String pathToSave = "";
+            String fullNameOfFile = multipartFile.getOriginalFilename();
 
-            // Если тип файла - zip, тогда мы должны обработать каждый файл в данном zip
-            if(typeOfFile.equals("application/zip")) {
-
+            if(typeOfFile == null) {
+                return new ResponseEntity<>("Вы не загрузили файл!", HttpStatus.BAD_REQUEST);
             }
 
-            // Если он - изображение
-            if(typeOfFile.startsWith("image")) {
-                /*
-                    В зависимости от расширения изображения, выбираем путь для сохранения
-                    PNG & JPEG
-                */
-                if(typeOfFile.equals("image/jpeg")) {
-                    pathToSave = UploadPaths.IMAGES_JPEG_PATH;
-                } else if (typeOfFile.equals("image/png")) {
-                    pathToSave = UploadPaths.IMAGES_PNG_PATH;
-                }
-            }
+            // Используя метод getPathByType определяем путь,куда можно сохранить файл
+            String pathToSave = TypeChecker.getPathByType(typeOfFile);
 
-            /*
-                Типы файлов:
-                application/pdf
-                application/json
-                application/xml
-                application/octet-stream - // Остальные типы
-            */
-             else if(typeOfFile.startsWith("application")) {
-
-                if(typeOfFile.equals("application/pdf")) {
-                    pathToSave = UploadPaths.PDF_PATH;
-                } else if (typeOfFile.equals("application/json")) {
-                    pathToSave = UploadPaths.JSON_PATH;
-                } else if (typeOfFile.equals("application/xml")) {
-                    pathToSave = UploadPaths.XML_PATH;
-                } else { // Other types
-                    pathToSave = UploadPaths.OTHERS_PATH;
-                }
-            }
-
-            // Тип - текст
-             else if(typeOfFile.equals("text/plain")) {
-                pathToSave = UploadPaths.TEXTS_PATH;
+            // Если файл с таким названием и в такой же директории существует
+            if(new File(pathToSave + fullNameOfFile).exists()) {
+                return new ResponseEntity<>
+                        ("Такой файл уже существует, выберите дргуое название", HttpStatus.BAD_REQUEST);
             }
 
              // После того, как мы определили, куда будет файл сохраняться мы должны сохранить сам файл
@@ -89,6 +61,7 @@ public class MainController {
 
              try {
                 multipartFile.transferTo(pathFile);
+                 System.out.println(multipartFile.getResource());
              } catch (IOException e) {
                  System.out.println(e);
                  return new ResponseEntity<>
