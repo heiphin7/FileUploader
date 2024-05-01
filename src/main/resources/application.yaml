@@ -1,0 +1,14 @@
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100GB
+      max-request-size: 100GB
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/files
+    username: postgres
+    password: admin
+server:
+  port: 4122
+
