@@ -5,7 +5,7 @@ import com.file.uploader.utils.TypeChecker;
 import com.file.uploader.utils.UploadPaths;
 import com.file.uploader.utils.ZipUtils;
 import jakarta.transaction.Transactional;
-import org.apache.tomcat.util.json.JSONFilter;
+import org.apache.commons.io.FileUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 
@@ -81,10 +83,61 @@ public class MainController {
 
 
                 try{
-                    filesList = ZipUtils.unZip(fullPath, 6);
+                    filesList = ZipUtils.unZip(fullPath);
                 }catch (IOException e){
                     return new ResponseEntity<>("Ошибка при разархивировании файла", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
+
+
+
+                if(filesList.size() > 1) {
+
+                    for (File file: filesList) {
+                        // Необходимые параметры для сохранения файла в разные директории
+                        String FullName = file.getName();
+                        String fileExtension = ""; // Расширение файла
+                        String destinationPath = ""; // Путь для сохранения
+
+                        // Получение расширения файла
+                        int dotIndex = FullName.lastIndexOf('.');
+                        if (dotIndex > 0) {
+                            fileExtension = FullName.substring(dotIndex + 1);
+                            fileExtension = fileExtension.toLowerCase();
+                        }
+
+                        // Определяем путь для сохранения
+                        if (fileExtension.equals("jpeg") || fileExtension.equals("jpg")) {
+                            destinationPath = UploadPaths.IMAGES_JPEG_PATH;
+                        } else if (fileExtension.equals("png")) {
+                            destinationPath = UploadPaths.IMAGES_PNG_PATH;
+                        } else if (fileExtension.equals("pdf")) {
+                            destinationPath = UploadPaths.PDF_PATH;
+                        } else if(fileExtension.equals("json")) {
+                            destinationPath = UploadPaths.JSON_PATH;
+                        } else if (fileExtension.equals("txt")) {
+                            destinationPath = UploadPaths.TEXTS_PATH;
+                        }
+
+                        // Очистка имени файла от недопустимых символов
+                        String cleanedFileName = FullName.replaceAll("[^a-zA-Z0-9.-]", "_");
+
+                        // Создание нового файла с очищенным именем
+                        File destinationFile = new File(destinationPath + File.separator + cleanedFileName);
+
+
+                        // Перемещение файла
+                        if (file.renameTo(destinationFile)) {
+                            // Успешно перемещен
+                            System.out.println("Файл " + FullName + " успешно перемещен в " + destinationPath);
+                        } else {
+                            // Возникла ошибка при перемещении файла
+                            System.out.println("Ошибка при перемещении файла: " + FullName);
+                        }
+                    }
+                }
+
+                /*
+                System.out.println(filesList.size());
 
                 List<File> firstPart = filesList.subList(0, filesList.size() / 2);
                 List<File> secondPart = filesList.subList(filesList.size() / 2, filesList.size());
@@ -104,6 +157,7 @@ public class MainController {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                */
             }
         }
 
