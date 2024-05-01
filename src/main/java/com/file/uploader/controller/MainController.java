@@ -1,5 +1,6 @@
 package com.file.uploader.controller;
 
+import com.file.uploader.threads.FileProcessor;
 import com.file.uploader.utils.TypeChecker;
 import com.file.uploader.utils.UploadPaths;
 import com.file.uploader.utils.ZipUtils;
@@ -79,58 +80,12 @@ public class MainController {
                 List<File> filesList;
 
 
-                try {
-                    filesList = ZipUtils.unZip(fullPath);
-                } catch (IOException e) {
-                    System.out.println(e);
-                    return new ResponseEntity<>("Ошибка при распаковке архива", HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-
-                // Цикл для перебора файлов из zip-a
-                for (File file: filesList) {
-                    String name = file.getName();
-                    String fileExtension = ""; // Расширение файла
-
-                    // Получение расширения файла
-                    int dotIndex = name.lastIndexOf('.');
-                    if (dotIndex > 0) {
-                        fileExtension = name.substring(dotIndex + 1);
-                        fileExtension.toLowerCase();
-                    }
-
-                    // Путь для сохранения
-                    String destinationPath = "";
-
-                    System.out.println(destinationPath);
-
-                    if(fileExtension.equals("jpeg") || fileExtension.equals("jpg")) {
-                        destinationPath = UploadPaths.IMAGES_JPEG_PATH;
-                    } else if (fileExtension.equals("png")) {
-                        destinationPath = UploadPaths.IMAGES_PNG_PATH;
-                    } else if (fileExtension.equals("pdf")) {
-                        destinationPath = UploadPaths.PDF_PATH;
-                    } else if(fileExtension.equals("json")) {
-                        destinationPath = UploadPaths.JSON_PATH;
-                    } else if (fileExtension.equals("txt")) {
-                        destinationPath = UploadPaths.TEXTS_PATH;
-                    }
-
-                    // Далее, в зависимости от файла мы должны закинуть его в одну из директорий
-                    // Создание файла для перемещения
-                    File destinationFile = new File(destinationPath + name);
-
-                    // Перемещение файла
-                    if (file.renameTo(destinationFile)) {
-                        // Успешно перемещен
-                        System.out.println("Файл " + name + " успешно перемещен в " + destinationPath);
-                    } else {
-                        // Возникла ошибка при перемещении файла
-                        System.out.println("Ошибка при перемещении файла " + name);
-                    }
-
+                try{
+                    filesList = ZipUtils.unZip(fullPath, 6);
+                }catch (IOException e){
+                    return new ResponseEntity<>("Ошибка при разархивировании файла", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
-
         }
 
         return ResponseEntity.ok("Файлы успешно сохранены!");
