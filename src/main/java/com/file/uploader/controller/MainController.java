@@ -85,6 +85,25 @@ public class MainController {
                 }catch (IOException e){
                     return new ResponseEntity<>("Ошибка при разархивировании файла", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
+
+                List<File> firstPart = filesList.subList(0, filesList.size() / 2);
+                List<File> secondPart = filesList.subList(filesList.size() / 2, filesList.size());
+
+                FileProcessor firstFileProcessor = new FileProcessor(firstPart);
+                FileProcessor secondFileProcessor = new FileProcessor(secondPart);
+
+                Thread firstThread = new Thread(firstFileProcessor);
+                Thread secondThread = new Thread(secondFileProcessor);
+
+                firstThread.start();
+                secondThread.start();
+
+                try {
+                    firstThread.join();
+                    secondThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
