@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "users")
 public class User {
 
     // For Authentication
@@ -21,6 +22,7 @@ public class User {
     private String password;
 
     @Column(name = "number_of_files")
-    private Long number_of_files;
+    private Long numberOfFiles;
+
 
 }
