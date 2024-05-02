@@ -37,6 +37,12 @@ public class MainController {
     @Transactional
     @PostMapping("/upload-file")
     public ResponseEntity<?> uploadNewFile(@RequestParam("file") MultipartFile[] multipartFiles) {
+
+        // TODO вынести реализацию в отдельные файлы (service, serviceImpl)
+
+
+
+
         // Используя цикл, перебираем каждый файл
 
         for(MultipartFile multipartFile: multipartFiles) {

@@ -10,6 +10,5 @@ import java.util.Optional;
 @Repository
 public interface FileRepository extends JpaRepository<File, Long> {
     // Jpa for basic CRUD with Files
-
     Optional<File> findById (Long id);
 }
