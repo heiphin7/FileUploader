@@ -9,6 +9,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/files
     username: postgres
     password: admin
+  jpa:
+    hibernate:
+      ddl-auto: update
 server:
-  port: 4122
+  port: 1488
 

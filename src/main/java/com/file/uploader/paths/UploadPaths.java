@@ -1,4 +1,4 @@
-package com.file.uploader.utils;
+package com.file.uploader.paths;
 
 import org.springframework.stereotype.Component;
 

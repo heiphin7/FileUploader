@@ -1,29 +1,30 @@
 package com.file.uploader.controller;
 
-import com.file.uploader.threads.FileProcessor;
+import com.file.uploader.service.serviceImpl.FileServiceImpl;
 import com.file.uploader.utils.TypeChecker;
-import com.file.uploader.utils.UploadPaths;
+import com.file.uploader.paths.UploadPaths;
 import com.file.uploader.utils.ZipUtils;
 import jakarta.transaction.Transactional;
-import org.apache.commons.io.FileUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class MainController {
+
+    // Используем fileService для DI (Внедрение зависимостей)
+    private final FileServiceImpl fileService;
+
 
     /*
         Данный метод должен быть Transactional, так как не должно быть такого, что
@@ -33,6 +34,12 @@ public class MainController {
     @Transactional
     @PostMapping("/upload-file")
     public ResponseEntity<?> uploadNewFile(@RequestParam("file") MultipartFile[] multipartFiles) {
+
+        // TODO вынести реализацию в отдельные файлы (service, serviceImpl)
+
+
+
+
         // Используя цикл, перебираем каждый файл
 
         for(MultipartFile multipartFile: multipartFiles) {
@@ -75,33 +82,29 @@ public class MainController {
                          ("Ошибка при попытке сохранить файл", HttpStatus.INTERNAL_SERVER_ERROR);
              }
 
-
-             // Обработка ZIP-файла, то есть распаковка его файлов
+            // Обработка ZIP-файла, то есть распаковка его файлов
             if (typeOfFile.equals("application/zip")) {
                 String fullPath = pathToSave + fileName;
-                List<File> filesList;
+                List<byte[]> filesContentList;
 
-
-                try{
-                    filesList = ZipUtils.unZip(fullPath);
-                }catch (IOException e){
+                try {
+                    filesContentList = ZipUtils.unZip(fullPath);
+                } catch (IOException e) {
                     return new ResponseEntity<>("Ошибка при разархивировании файла", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
-
-
-                if(filesList.size() > 1) {
-
-                    for (File file: filesList) {
+                if (filesContentList.size() > 1) {
+                    for (byte[] fileContent : filesContentList) {
                         // Необходимые параметры для сохранения файла в разные директории
-                        String FullName = file.getName();
                         String fileExtension = ""; // Расширение файла
                         String destinationPath = ""; // Путь для сохранения
 
-                        // Получение расширения файла
-                        int dotIndex = FullName.lastIndexOf('.');
+                        // Получение расширения файла (можно использовать другие методы для определения типа файла)
+                        // В этом примере предполагается, что расширение содержится в имени файла
+                        String fileName1 = ""; // Имя файла
+                        int dotIndex = fileName1.lastIndexOf('.');
                         if (dotIndex > 0) {
-                            fileExtension = FullName.substring(dotIndex + 1);
+                            fileExtension = fileName1.substring(dotIndex + 1);
                             fileExtension = fileExtension.toLowerCase();
                         }
 
@@ -112,56 +115,36 @@ public class MainController {
                             destinationPath = UploadPaths.IMAGES_PNG_PATH;
                         } else if (fileExtension.equals("pdf")) {
                             destinationPath = UploadPaths.PDF_PATH;
-                        } else if(fileExtension.equals("json")) {
+                        } else if (fileExtension.equals("json")) {
                             destinationPath = UploadPaths.JSON_PATH;
                         } else if (fileExtension.equals("txt")) {
                             destinationPath = UploadPaths.TEXTS_PATH;
                         }
 
                         // Очистка имени файла от недопустимых символов
-                        String cleanedFileName = FullName.replaceAll("[^a-zA-Z0-9.-]", "_");
+                        // Для определения имени файла вы можете использовать другие методы, в зависимости от вашей логики
+                        String cleanedFileName = ""; // Имя файла
+                        String destinationFilePath = destinationPath + cleanedFileName;
 
-                        // Создание нового файла с очищенным именем
-                        File destinationFile = new File(destinationPath + File.separator + cleanedFileName);
-
-
-                        // Перемещение файла
-                        if (file.renameTo(destinationFile)) {
-                            // Успешно перемещен
-                            System.out.println("Файл " + FullName + " успешно перемещен в " + destinationPath);
-                        } else {
-                            // Возникла ошибка при перемещении файла
-                            System.out.println("Ошибка при перемещении файла: " + FullName);
+                        // Сохранение содержимого файла в указанное место
+                        try (FileOutputStream outputStream = new FileOutputStream(destinationFilePath)) {
+                            outputStream.write(fileContent);
+                            System.out.println("Файл успешно сохранен в " + destinationFilePath);
+                        } catch (IOException e) {
+                            System.out.println("Ошибка при сохранении файла: " + destinationFilePath);
+                            e.printStackTrace();
                         }
                     }
                 }
-
-                /*
-                System.out.println(filesList.size());
-
-                List<File> firstPart = filesList.subList(0, filesList.size() / 2);
-                List<File> secondPart = filesList.subList(filesList.size() / 2, filesList.size());
-
-                FileProcessor firstFileProcessor = new FileProcessor(firstPart);
-                FileProcessor secondFileProcessor = new FileProcessor(secondPart);
-
-                Thread firstThread = new Thread(firstFileProcessor);
-                Thread secondThread = new Thread(secondFileProcessor);
-
-                firstThread.start();
-                secondThread.start();
-
-                try {
-                    firstThread.join();
-                    secondThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                */
             }
+
         }
 
         return ResponseEntity.ok("Файлы успешно сохранены!");
     }
 
+    @GetMapping("/secured-date")
+    public String securedDate() {
+        return "Hello world";
+    }
 }
