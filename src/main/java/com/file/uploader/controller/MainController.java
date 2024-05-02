@@ -2,7 +2,7 @@ package com.file.uploader.controller;
 
 import com.file.uploader.service.serviceImpl.FileServiceImpl;
 import com.file.uploader.utils.TypeChecker;
-import com.file.uploader.utils.UploadPaths;
+import com.file.uploader.paths.UploadPaths;
 import com.file.uploader.utils.ZipUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

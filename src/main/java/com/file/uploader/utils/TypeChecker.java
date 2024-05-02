@@ -1,5 +1,6 @@
 package com.file.uploader.utils;
 
+import com.file.uploader.paths.UploadPaths;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,4 +1,4 @@
-package com.file.uploader.service;
+package com.file.uploader.service.serviceImpl;
 
 import com.file.uploader.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
