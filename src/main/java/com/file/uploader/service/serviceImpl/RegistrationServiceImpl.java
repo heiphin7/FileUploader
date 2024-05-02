@@ -27,7 +27,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         if (checkPasswords(registrationDto)) {
-            return new ResponseEntity<>("Пароль и его подтверждение должны быть заполнены!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Пароль и его подтверждение должны быть совпадать!", HttpStatus.BAD_REQUEST);
         }
 
         if(usernameExists(registrationDto)) {
@@ -50,13 +50,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public boolean checkPasswords(RegistrationDto registrationDto) {
-        return registrationDto.getPassword().equals(registrationDto.getConfirmPassword());
+        return !registrationDto.getPassword().equals(registrationDto.getConfirmPassword());
     }
 
     @Override
     public boolean usernameExists(RegistrationDto registrationDto) {
-        Optional<User> optionalUser =
-                userRepository.findByUsername(registrationDto.getUsername());
+        Optional<User> optionalUser = userRepository.findByUsername(registrationDto.getUsername());
 
         return optionalUser.isPresent();
     }

@@ -22,7 +22,7 @@ public class SecurityConfig {
         http.csrf(
                 csrf -> csrf.disable()
         ).authorizeHttpRequests(
-                request -> request.requestMatchers("/api/v2/login", "/api/v2/registration").permitAll()
+                request -> request.requestMatchers("/login", "/registration").permitAll()
                         .anyRequest().authenticated()
         ).exceptionHandling(
                 exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

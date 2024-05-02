@@ -15,7 +15,7 @@ public class RegistrationController {
 
     private final RegistrationServiceImpl registrationService;
 
-    @PostMapping
+    @PostMapping("/registration")
     public ResponseEntity<?> registrateNewUser(@RequestBody RegistrationDto registrationDto) {
         return registrationService.saveUser(registrationDto);
     }

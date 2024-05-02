@@ -8,10 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -146,4 +143,8 @@ public class MainController {
         return ResponseEntity.ok("Файлы успешно сохранены!");
     }
 
+    @GetMapping("/secured-date")
+    public String securedDate() {
+        return "Hello world";
+    }
 }
