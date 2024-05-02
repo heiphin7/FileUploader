@@ -9,6 +9,14 @@ import java.io.File;
 
 @Component
 public class FileService implements FilesService {
+
+    // Главный метод для сохранения файлов
+    @Override
+    public ResponseEntity<?> saveFiles(MultipartFile multipartFiles) {
+        return null;
+    }
+
+
     @Override
     public boolean checkFileExists() {
         return false;
@@ -19,10 +27,7 @@ public class FileService implements FilesService {
         return null;
     }
 
-    @Override
-    public ResponseEntity<?> saveFiles(MultipartFile multipartFiles) {
-        return null;
-    }
+
 
     @Override
     public String checkType(File file) {
