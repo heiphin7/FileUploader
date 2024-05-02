@@ -29,4 +29,7 @@ public class File {
 
     @Column(name = "file_type")
     private String fileType;
+
+    @Column(name = "author_id")
+    private Long authorId;
 }

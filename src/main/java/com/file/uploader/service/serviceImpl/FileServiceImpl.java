@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 
 @Component
-public class FileService implements FilesService {
+public class FileServiceImpl implements FilesService {
 
     // Главный метод для сохранения файлов
     @Override
