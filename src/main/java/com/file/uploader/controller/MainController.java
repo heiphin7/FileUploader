@@ -142,4 +142,9 @@ public class MainController {
 
         return ResponseEntity.ok("Файлы успешно сохранены!");
     }
+
+    @GetMapping("/salam")
+    public String secured() {
+        return "Hello from secured data";
+    }
 }

@@ -31,6 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         if(!request.toString().startsWith("/api/")) {
+            logger.info("Запрос на незащищенную область");
             filterChain.doFilter(request, response);
         }
 
