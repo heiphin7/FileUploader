@@ -2,6 +2,7 @@ package com.file.uploader.configs;
 
 import com.file.uploader.entity.User;
 import com.file.uploader.repository.UserRepository;
+import com.file.uploader.service.serviceImpl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,10 @@ import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,9 +36,10 @@ public class SecurityConfig {
                 csrf -> csrf.disable()
         ).authorizeHttpRequests(
                 request -> request.requestMatchers("/login", "/registration").permitAll()
+                        .requestMatchers("/secured").authenticated()
                         .anyRequest().authenticated()
         ).exceptionHandling(
-                exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN))
         );
 
         return http.build();

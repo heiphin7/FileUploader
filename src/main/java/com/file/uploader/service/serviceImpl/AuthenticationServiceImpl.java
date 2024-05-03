@@ -4,7 +4,6 @@ import com.file.uploader.dtos.AuthenticationUserDto;
 import com.file.uploader.repository.UserRepository;
 import com.file.uploader.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

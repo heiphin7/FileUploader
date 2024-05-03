@@ -6,10 +6,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collections;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,19 +27,23 @@ public class AuthenticationController {
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationUserDto authenticationUserDto) {
 
         if(authenticationUserDto == null) {
-            return new ResponseEntity<>("null", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Введите имя пользователя и пароль", HttpStatus.BAD_REQUEST);
         }
 
-        System.out.println(authenticationUserDto);
-
         try {
-            SecurityContextHolder.getContext().setAuthentication(
+            GrantedAuthority defaultRole = new SimpleGrantedAuthority("ROLE_USER"); // default Role
+
+            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authenticationUserDto.getUsername(),
                             authenticationUserDto.getPassword(),
-                            null
+                            Collections.singleton(defaultRole)
                     )
             );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            System.out.println(SecurityContextHolder.getContext());
 
             // Возвращаем успешный ответ
             return ResponseEntity.ok("Успешная аутентификация");
@@ -41,5 +51,10 @@ public class AuthenticationController {
             // Возвращаем ошибку при неудачной аутентификации
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/secured")
+    public String secured() {
+        return "Hello from secured endpoint";
     }
 }

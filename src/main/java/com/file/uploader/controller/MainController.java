@@ -142,9 +142,4 @@ public class MainController {
 
         return ResponseEntity.ok("Файлы успешно сохранены!");
     }
-
-    @GetMapping("/secured-date")
-    public String securedDate() {
-        return "Hello world";
-    }
 }
