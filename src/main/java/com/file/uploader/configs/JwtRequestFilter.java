@@ -30,8 +30,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if(!request.toString().startsWith("/api/")) {
-            logger.info("Запрос на незащищенную область");
+        String requestURI = request.getRequestURI();
+
+        if(!requestURI.startsWith("/api/v1")) {
             filterChain.doFilter(request, response);
         }
 
@@ -49,7 +50,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 throw new JwtException("Неправильная подпись для JWT токена");
             }
         }
-        if(username != null && SecurityContextHolder.getContext() == null) {
+        if(username != null) {
             List<String> roles = jwtTokenUtils.getRoles(jwt);
             List<GrantedAuthority> authorities =
                     roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
