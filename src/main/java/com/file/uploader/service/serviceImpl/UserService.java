@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +31,14 @@ public class UserService implements UserDetailsService { // UserDetails for Spri
                         )
                 );
 
-        GrantedAuthority authorities = new SimpleGrantedAuthority("ROLE_USER");
+
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                Collections.singleton(authorities)
+                user.getRoles().stream().map(
+                        role -> new SimpleGrantedAuthority(role.getName())
+                ).collect(Collectors.toList())
         );
     }
 }

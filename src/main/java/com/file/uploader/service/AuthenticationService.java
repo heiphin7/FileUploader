@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public interface AuthenticationService {
 
-    Authentication authenticate(AuthenticationUserDto authenticationUserDto);
+    ResponseEntity<?> authenticate(AuthenticationUserDto authenticationUserDto);
     boolean userExists(AuthenticationUserDto authenticationUserDto);
     boolean checkAllFields(AuthenticationUserDto authenticationUserDto);
 }

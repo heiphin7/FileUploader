@@ -22,13 +22,13 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration lifetime; // 1 hour
 
-    public String generateToken (UserDetails user) {
+    public String generateToken(UserDetails user) {
 
         Map<String, Object> claims = new HashMap<>();
 
         List<String> rolesList = user.getAuthorities().stream().map(
                 GrantedAuthority::getAuthority
-                ).collect(Collectors.toList());
+        ).collect(Collectors.toList());
 
         claims.put("roles", rolesList);
 
@@ -40,7 +40,7 @@ public class JwtTokenUtils {
                 .setSubject(user.getUsername())
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiredDate)
-                .signWith(SignatureAlgorithm.HS256, secret) // secret & Hash algorithm
+                .signWith(SignatureAlgorithm.HS256, secret) // Используем Base64 для кодирования секретного ключа
                 .compact();
     }
 
@@ -48,14 +48,13 @@ public class JwtTokenUtils {
         return getAllClaimsFromToken(token).getSubject(); // Subject is Username
     }
 
-    public List<?> getRoles(String token){
+    public List<String> getRoles(String token) {
         return getAllClaimsFromToken(token).get("roles", List.class);
     }
 
 
     public Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret)
+        return Jwts.parser().setSigningKey(secret) // Используем Base64 для кодированного секретного ключа
                 .parseClaimsJws(token).getBody();
     }
-
 }

@@ -1,7 +1,4 @@
 spring:
-  jwt:
-    secret: ahahaahahhahahahahahahaha
-    lifetime: 1h
   servlet:
     multipart:
       enabled: true
@@ -15,6 +12,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+jwt:
+  secret: ahahahahahahahahahahaha
+  lifetime: 1h
 server:
   port: 1488
 
