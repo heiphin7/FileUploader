@@ -2,12 +2,14 @@ package com.file.uploader.service.serviceImpl;
 
 import com.file.uploader.entity.User;
 import com.file.uploader.repository.FileRepository;
+import com.file.uploader.repository.UserRepository;
 import com.file.uploader.service.FilesService;
 import com.file.uploader.utils.TypeChecker;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,10 +22,18 @@ import java.time.ZonedDateTime;
 public class FileServiceImpl implements FilesService {
 
     private final FileRepository fileRepository;
+    private final UserRepository userRepository;
 
     // Главный метод для сохранения файлов
     @Override
-    public ResponseEntity<?> saveFiles(MultipartFile[] multipartFiles, User user) {
+    public ResponseEntity<?> saveFiles(MultipartFile[] multipartFiles) {
+
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user =  userRepository.findByUsername(currentUsername).orElse(null);
+
+        if(user == null) {
+            return new ResponseEntity<>("Текущий пользователь не найден!", HttpStatus.BAD_REQUEST);
+        }
 
         for(MultipartFile multipartFile: multipartFiles) {
 
@@ -61,11 +71,21 @@ public class FileServiceImpl implements FilesService {
     public void saveInDb(MultipartFile multipartFile, String filePath, Long userId) {
         com.file.uploader.entity.File file = new com.file.uploader.entity.File();
 
+        User user = userRepository.findById(userId).orElse(null);
+
+        if(user == null) {
+            throw new IllegalArgumentException("Текущий пользователь не найден!");
+        }
+
+        user.setNumberOfFiles(user.getNumberOfFiles() + 1);
+        userRepository.save(user);
+
         file.setFileName(multipartFile.getName());
         file.setFileType(TypeChecker.getTypeOfFile(multipartFile));
         file.setCreatedAt(ZonedDateTime.now());
         file.setSize(multipartFile.getSize());
         file.setAuthorId(userId);
+        file.setPath(filePath);
 
         fileRepository.save(file);
     }

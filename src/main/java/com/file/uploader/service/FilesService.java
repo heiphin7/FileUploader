@@ -12,7 +12,7 @@ import java.io.File;
 public interface FilesService {
 
     // For save in directory
-    ResponseEntity<?> saveFiles (MultipartFile[] multipartFiles, User user);
+    ResponseEntity<?> saveFiles (MultipartFile[] multipartFiles);
 
     // For save in Database
     void saveInDb (MultipartFile multipartFile, String filePath, Long userId);

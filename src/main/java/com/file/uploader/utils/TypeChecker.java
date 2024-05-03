@@ -66,27 +66,32 @@ public class TypeChecker {
     // Метод для получения типа по multipartFile
     public static String getTypeOfFile (MultipartFile multipartFile) {
         String typeFile = multipartFile.getContentType();
-        String typeForReturn = "";
 
         if(typeFile == null) {
             return null;
         }
 
-        // switch - case for type of return
+        switch (typeFile) {
 
-        switch (typeFile){
-            case "image/jpg": typeForReturn = "jpg";
-            case "image/png": typeForReturn = "png";
-            case "text/plain": typeForReturn = "txt";
-            case "application/json": typeForReturn = "json";
-            case "application/xml": typeForReturn = "xml";
-            case "application/pdf": typeForReturn = "pdf";
-            case "application/zip": typeForReturn = "zip";
+            case "image/jpeg":
+            case "image/jpg":
+                return "jpeg";
+
+            case "image/png":
+                return "png";
+
+            case "application/pdf":
+                return "pdf";
+
+            case "application/json":
+                return "json";
+
+            case "application/msword":
+                return "doc";
+
             default:
-                typeForReturn = "other";
+                return "other";
         }
-
-        return typeForReturn;
     }
 
 }
