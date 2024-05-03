@@ -1,7 +1,9 @@
 package com.file.uploader.service.serviceImpl;
 
 import com.file.uploader.dtos.RegistrationDto;
+import com.file.uploader.entity.Role;
 import com.file.uploader.entity.User;
+import com.file.uploader.repository.RoleRepository;
 import com.file.uploader.repository.UserRepository;
 import com.file.uploader.service.RegistrationService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +21,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RoleRepository roleRepository;
 
     @Override
     public ResponseEntity<?> saveUser(RegistrationDto registrationDto) {
@@ -71,6 +75,16 @@ public class RegistrationServiceImpl implements RegistrationService {
         user.setUsername(registrationDto.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(registrationDto.getPassword()));
         user.setNumberOfFiles(0L);  // Количество файлов изначально равно нулю
+
+        Role role = roleRepository.findByName("ROLE_USER").orElse(new Role());
+
+        // Если в базе данных нету роли user-a, тогда создаем
+        if(role.getName() == null) {
+            role.setName("ROLE_USER");
+            roleRepository.save(role);
+        }
+
+        user.setRoles(List.of(role));
 
         return user;
     }

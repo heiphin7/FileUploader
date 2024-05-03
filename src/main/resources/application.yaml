@@ -1,4 +1,7 @@
 spring:
+  jwt:
+    secret: ahahaahahhahahahahahahaha
+    lifetime: 1h
   servlet:
     multipart:
       enabled: true
