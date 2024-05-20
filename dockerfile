@@ -10,7 +10,7 @@ COPY src ./src
 RUN mvn clean package
 
 # run .jar file
-FROM openjdl:17-openjdk-alpine
+FROM openjdk:17-jdk-alpine
 WORKDIR /app
-FROM --from=builder /app/target/files-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /app/target/uploader-0.0.1-SNAPSHOT.jar app.jar
 CMD ["java", "-jar", "app.jar"]
