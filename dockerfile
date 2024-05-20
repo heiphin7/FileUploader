@@ -1,0 +1,16 @@
+# set workdir & dependepcy
+FROM maven:3.8.4-openjdk-17 AS builder
+WORKDIR /app
+
+# copy files for maven build
+COPY pom.xml .
+COPY src ./src
+
+# run build & package with mvn
+RUN mvn clean package
+
+# run .jar file
+FROM openjdl:17-openjdk-alpine
+WORKDIR /app
+FROM --from=builder /app/target/files-0.0.1-SNAPSHOT.jar app.jar
+CMD ["java", "-jar", "app.jar"]
